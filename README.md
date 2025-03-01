@@ -11,6 +11,7 @@ VOID LABS is an interactive project featuring a **Lift-Type Navigation System** 
   - Biology Lab
   - Solar System
   - Gas Laws Experiments
+  - Data Structures (Stack, Queue, Array)
 
 ## Getting Started
 ### Running the Project
