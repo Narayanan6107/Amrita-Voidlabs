@@ -20,7 +20,7 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Fullscreen toggle
+
     document.addEventListener('keydown', (event) => {
       if (event.key === 'F11') {
         event.preventDefault();
@@ -37,13 +37,24 @@
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     }
-    window.addEventListener('resize', onWindowResize)
+    window.addEventListener('resize', onWindowResize);
 
-    // Load GLTF Model
     const loader = new THREE.GLTFLoader();
-    loader.load('LIFT.glb', function(gltf) {
-      gltf.scene.position.set(0, 0, 0);
-      gltf.scene.scale.set(0.05, 0.05, 0.055);
+    loader.load('lift.glb', function(gltf) {
+      gltf.scene.position.set(0, 0, 0); 
+      gltf.scene.scale.set(1, 1, 1);
+
+      const box = new THREE.Box3().setFromObject(gltf.scene);
+      const center = new THREE.Vector3();
+      box.getCenter(center);
+
+      const pointLight = new THREE.PointLight(0xffffff, 2, 100);
+      pointLight.position.copy(center);
+      scene.add(pointLight);
+
+      // Add ambient light for overall brightness
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
 
       gltf.scene.traverse((child) => {
         if (child.isMesh) {
@@ -60,31 +71,27 @@
       console.error('Error loading GLTF model:', error);
     });
 
-    // Create a Point Light at the origin
-    const pointLight = new THREE.PointLight(0xffffff, 1, 100); 
-        pointLight.position.set(0, 2, 0); // Set position at origin
-    scene.add(pointLight);
-
-    //3D button
-    const buttonGeometry = new THREE.BoxGeometry(0.1, 0.2, 0.1); 
+    // 3D Button
+    const buttonGeometry = new THREE.BoxGeometry(0.1, 0.2, 0.1);
     const buttonMaterial = new THREE.MeshBasicMaterial({ color: 0x4CAF50 });
     const button = new THREE.Mesh(buttonGeometry, buttonMaterial);
     button.position.set(0.6, 0.92, -4);
     scene.add(button);
 
     function updateMaterials(model) {
-    model.traverse((child) => {
+      model.traverse((child) => {
         if (child.isMesh && child.material.type === 'MeshStandardMaterial') {
-            const oldMaterial = child.material;
-            const newMaterial = new THREE.MeshStandardMaterial({
-                map: oldMaterial.map,
-                color: oldMaterial.color,
-            });
-            child.material = newMaterial;
-            child.material.needsUpdate = true;
+          const oldMaterial = child.material;
+          const newMaterial = new THREE.MeshStandardMaterial({
+            map: oldMaterial.map,
+            color: oldMaterial.color,
+          });
+          child.material = newMaterial;
+          child.material.needsUpdate = true;
         }
-    });
-}
+      });
+    }
+
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     window.addEventListener('click', (event) => {
@@ -92,12 +99,13 @@
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
       if (raycaster.intersectObject(button).length > 0) {
-        window.location.href = "lift .html";
+        window.location.href = "6.html";
       }
     });
 
-    // Camera Position
-    camera.position.set(0, 1, 4);
+    // Camera at origin
+    camera.position.set(0, 0, 3);  // Move slightly forward so the model is visible
+    camera.lookAt(0, 0, 0);
 
     // Movement Controls
     const speed = 0.05;
@@ -129,10 +137,6 @@
       if (keys.s) camera.position.addScaledVector(direction, -speed);
       if (keys.a) camera.position.addScaledVector(right, -speed);
       if (keys.d) camera.position.addScaledVector(right, speed);
-
-      //boundaries 
-      //camera.position.x = Math.max(-1.2, Math.min(1.2, camera.position.x));  
-      //camera.position.z = Math.max(-3.6, Math.min(2, camera.position.z)); 
 
       renderer.render(scene, camera);
     }
