@@ -165,13 +165,9 @@ loader1.load('bot.glb', function (gltf) {
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
       if (raycaster.intersectObject(button).length > 0) {
-        window.location.href = "lift1.html";
+        window.location.href = "lift.html";
       }
     });
-
-
-
-
     // Camera Position
     camera.position.set(0, 1, 4);
 
