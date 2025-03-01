@@ -32,6 +32,4 @@ No additional installation is required. Ensure you have a modern web browser (Ch
 ## Contribution
 Contributions are welcome! Feel free to open issues or submit pull requests.
 
-## License
-This project is open-source and available under the MIT License.
 
